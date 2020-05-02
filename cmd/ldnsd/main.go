@@ -42,6 +42,11 @@ func main() {
 			Usage: "Change the host:port to listen for GRPC connections",
 			Value: "localhost:7847",
 		},
+		cli.StringFlag{
+			Name:  "dnslisten, dl",
+			Usage: "Change the host:port to listen for DNS queries",
+			Value: "localhost:53",
+		},
 	}
 
 	app.Action = runDNS
@@ -86,10 +91,6 @@ func runDNS(ctx *cli.Context) error {
 		return errors.Wrap(err, "could not open database")
 	}
 
-	srv := dnsserver.NewWithDB(ctx.GlobalString("domain"), db)
-	srv.DeleteA("foo")
-	srv.SetA("foo", net.ParseIP("1.2.3.4"))
-
 	cert, err := c.Certificate.NewCert()
 	if err != nil {
 		return errors.Wrap(err, "invalid certificate configuration")
@@ -102,7 +103,8 @@ func runDNS(ctx *cli.Context) error {
 	}
 	go grpcS.Serve(l)
 
+	srv := dnsserver.NewWithDB(ctx.GlobalString("domain"), db)
 	installSignalHandler(ctx.App.Name, grpcS, l, srv)
 
-	return srv.Listen("127.0.0.1:5380")
+	return srv.Listen(ctx.GlobalString("dnslisten"))
 }
