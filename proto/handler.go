@@ -55,7 +55,9 @@ func (h *Handler) SetA(ctx context.Context, record *Record) (*empty.Empty, error
 func (h *Handler) DeleteA(ctx context.Context, record *Record) (*empty.Empty, error) {
 	r := fromGRPC(record)
 
-	h.db.DeleteA(r.Host)
+	if err := h.db.DeleteA(r.Host); err != nil {
+		return &empty.Empty{}, status.Errorf(codes.Aborted, "%v", err)
+	}
 
 	return &empty.Empty{}, nil
 }
