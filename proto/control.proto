@@ -6,6 +6,8 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
 service DNSControl {
+  rpc SetA(Record)    returns (google.protobuf.Empty) {}
+  rpc DeleteA(Record) returns (google.protobuf.Empty) {}
 }
 
 message Record {

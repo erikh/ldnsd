@@ -7,9 +7,11 @@ import (
 	context "context"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/golang/protobuf/ptypes/empty"
+	empty "github.com/golang/protobuf/ptypes/empty"
 	_ "github.com/golang/protobuf/ptypes/timestamp"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -80,16 +82,19 @@ func init() {
 }
 
 var fileDescriptor_0c5120591600887d = []byte{
-	// 138 bytes of a gzipped FileDescriptorProto
+	// 180 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4d, 0xce, 0xcf, 0x2b,
 	0x29, 0xca, 0xcf, 0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x05, 0x53, 0x52, 0xf2, 0xe9,
 	0xf9, 0xf9, 0xe9, 0x39, 0xa9, 0xfa, 0x60, 0x5e, 0x52, 0x69, 0x9a, 0x7e, 0x49, 0x66, 0x6e, 0x6a,
 	0x71, 0x49, 0x62, 0x6e, 0x01, 0x44, 0x9d, 0x94, 0x34, 0xba, 0x82, 0xd4, 0xdc, 0x82, 0x92, 0x4a,
 	0x88, 0xa4, 0x92, 0x19, 0x17, 0x5b, 0x50, 0x6a, 0x72, 0x7e, 0x51, 0x8a, 0x90, 0x10, 0x17, 0x4b,
 	0x46, 0x7e, 0x71, 0x89, 0x04, 0xa3, 0x02, 0xa3, 0x06, 0x67, 0x10, 0x98, 0x2d, 0x24, 0xc1, 0xc5,
-	0x9e, 0x98, 0x92, 0x52, 0x94, 0x5a, 0x5c, 0x2c, 0xc1, 0x04, 0x16, 0x86, 0x71, 0x8d, 0x78, 0xb8,
-	0xb8, 0x5c, 0xfc, 0x82, 0x9d, 0x21, 0x0e, 0x4a, 0x62, 0x03, 0x1b, 0x66, 0x0c, 0x08, 0x00, 0x00,
-	0xff, 0xff, 0x8a, 0xb4, 0x44, 0xeb, 0xa2, 0x00, 0x00, 0x00,
+	0x9e, 0x98, 0x92, 0x52, 0x94, 0x5a, 0x5c, 0x2c, 0xc1, 0x04, 0x16, 0x86, 0x71, 0x8d, 0x0a, 0xb9,
+	0xb8, 0x5c, 0xfc, 0x82, 0x9d, 0x21, 0x0e, 0x12, 0xd2, 0xe7, 0x62, 0x09, 0x4e, 0x2d, 0x71, 0x14,
+	0xe2, 0x85, 0x98, 0xaa, 0x07, 0x31, 0x52, 0x4a, 0x4c, 0x0f, 0x62, 0xb5, 0x1e, 0xcc, 0x6a, 0x3d,
+	0x57, 0x90, 0xd5, 0x4a, 0x0c, 0x42, 0x46, 0x5c, 0xec, 0x2e, 0xa9, 0x39, 0xa9, 0x25, 0xa9, 0xc4,
+	0xeb, 0x49, 0x62, 0x03, 0x8b, 0x18, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0x49, 0x9a, 0x7a, 0xbb,
+	0x07, 0x01, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -104,6 +109,8 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type DNSControlClient interface {
+	SetA(ctx context.Context, in *Record, opts ...grpc.CallOption) (*empty.Empty, error)
+	DeleteA(ctx context.Context, in *Record, opts ...grpc.CallOption) (*empty.Empty, error)
 }
 
 type dNSControlClient struct {
@@ -114,22 +121,94 @@ func NewDNSControlClient(cc grpc.ClientConnInterface) DNSControlClient {
 	return &dNSControlClient{cc}
 }
 
+func (c *dNSControlClient) SetA(ctx context.Context, in *Record, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/proto.DNSControl/SetA", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dNSControlClient) DeleteA(ctx context.Context, in *Record, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/proto.DNSControl/DeleteA", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DNSControlServer is the server API for DNSControl service.
 type DNSControlServer interface {
+	SetA(context.Context, *Record) (*empty.Empty, error)
+	DeleteA(context.Context, *Record) (*empty.Empty, error)
 }
 
 // UnimplementedDNSControlServer can be embedded to have forward compatible implementations.
 type UnimplementedDNSControlServer struct {
 }
 
+func (*UnimplementedDNSControlServer) SetA(ctx context.Context, req *Record) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetA not implemented")
+}
+func (*UnimplementedDNSControlServer) DeleteA(ctx context.Context, req *Record) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteA not implemented")
+}
+
 func RegisterDNSControlServer(s *grpc.Server, srv DNSControlServer) {
 	s.RegisterService(&_DNSControl_serviceDesc, srv)
+}
+
+func _DNSControl_SetA_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Record)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DNSControlServer).SetA(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.DNSControl/SetA",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DNSControlServer).SetA(ctx, req.(*Record))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DNSControl_DeleteA_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Record)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DNSControlServer).DeleteA(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.DNSControl/DeleteA",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DNSControlServer).DeleteA(ctx, req.(*Record))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 var _DNSControl_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "proto.DNSControl",
 	HandlerType: (*DNSControlServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams:     []grpc.StreamDesc{},
-	Metadata:    "control.proto",
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SetA",
+			Handler:    _DNSControl_SetA_Handler,
+		},
+		{
+			MethodName: "DeleteA",
+			Handler:    _DNSControl_DeleteA_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "control.proto",
 }
