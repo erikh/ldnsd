@@ -61,3 +61,18 @@ func (h *Handler) DeleteA(ctx context.Context, record *Record) (*empty.Empty, er
 
 	return &empty.Empty{}, nil
 }
+
+// ListA returns a list of DNS records that the database is currently holding.
+func (h *Handler) ListA(ctx context.Context, empty *empty.Empty) (*Records, error) {
+	m, err := h.db.ListA()
+	if err != nil {
+		return nil, status.Errorf(codes.Aborted, "%v", err)
+	}
+
+	records := &Records{}
+	for name, ip := range m {
+		records.Records = append(records.Records, &Record{Host: name, Address: ip.String()})
+	}
+
+	return records, nil
+}
