@@ -1,0 +1,12 @@
+.bash_history
+.bashrc
+.go-cache
+.sqlite_history
+.local
+build
+*.db
+*.tar.gz
+version/generated.go
+*.pem
+*.crt
+*.key
