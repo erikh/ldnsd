@@ -3,7 +3,7 @@ module code.hollensbe.org/erikh/ldnsd
 go 1.14
 
 require (
-	github.com/erikh/dnsserver v0.1.1-0.20200502092740-823fc24eee77
+	github.com/erikh/dnsserver v0.1.1-0.20200502183616-1db2eca4b14b
 	github.com/erikh/go-transport v0.1.0
 	github.com/golang/protobuf v1.3.5
 	github.com/jinzhu/gorm v1.9.12

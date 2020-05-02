@@ -71,10 +71,33 @@ func (db *DB) GetA(host string) (net.IP, error) {
 }
 
 // DeleteA removes a DNS record
-func (db *DB) DeleteA(host string) {
-	db.db.Transaction(func(tx *gorm.DB) error {
+func (db *DB) DeleteA(host string) error {
+	return db.db.Transaction(func(tx *gorm.DB) error {
 		return tx.Delete(&Record{Host: host}).Error
 	})
+}
+
+// ListA lists all the A records in the table
+func (db *DB) ListA() (map[string]net.IP, error) {
+	tmp := map[string]net.IP{}
+
+	return tmp, db.db.Transaction(func(tx *gorm.DB) error {
+		recs := []*Record{}
+		if err := tx.Find(recs).Error; err != nil {
+			return err
+		}
+
+		for _, rec := range recs {
+			tmp[rec.Host] = rec.IP()
+		}
+
+		return nil
+	})
+}
+
+// ListSRV does nothing but fulfill an interface.
+func (db *DB) ListSRV() (map[string]*db.SRVRecord, error) {
+	return nil, ErrNotSupported
 }
 
 // SetSRV does nothing but fulfill an interface.
@@ -88,4 +111,4 @@ func (db *DB) GetSRV(string) (*db.SRVRecord, error) {
 }
 
 // DeleteSRV does nothing but fulfill an interface.
-func (db *DB) DeleteSRV(string) {}
+func (db *DB) DeleteSRV(string) error { return ErrNotSupported }
