@@ -28,7 +28,7 @@ func main() {
 	app := cli.NewApp()
 	app.Version = version.Version
 	app.Usage = "Light DNSd -- a small DNS server with a remote control plane"
-	app.ArgsUsage = "[options] [config file]"
+	app.UsageText = app.Name + " [options] [config file]"
 	app.Author = Author
 
 	app.Flags = []cli.Flag{
