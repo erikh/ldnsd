@@ -38,6 +38,10 @@ func Parse(filename string) (Config, error) {
 }
 
 func (c *Config) validateAndFix() error {
+	if c.DBFile == "" {
+		c.DBFile = defaultDBFile
+	}
+
 	if c.Certificate.CertFile == "" {
 		c.Certificate.CertFile = defaultCertFile
 	}

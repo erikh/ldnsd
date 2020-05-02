@@ -81,7 +81,7 @@ func runDNS(ctx *cli.Context) error {
 		return errors.Wrap(err, "while parsing configuration")
 	}
 
-	db, err := dnsdb.New("test.db")
+	db, err := dnsdb.New(c.DBFile)
 	if err != nil {
 		return errors.Wrap(err, "could not open database")
 	}
