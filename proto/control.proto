@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+service DNSControl {
+}
+
+message Record {
+  string host = 1;
+  string address = 2;
+}

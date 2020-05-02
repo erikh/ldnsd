@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"code.hollensbe.org/erikh/ldnsd/dnsdb"
+	"code.hollensbe.org/erikh/ldnsd/proto"
 	"code.hollensbe.org/erikh/ldnsd/version"
 	"github.com/erikh/dnsserver"
 	"github.com/pkg/errors"
@@ -44,6 +45,8 @@ func runDNS(ctx *cli.Context) error {
 	if err != nil {
 		return errors.Wrap(err, "could not open database")
 	}
+
+	proto.Boot(db)
 
 	srv := dnsserver.NewWithDB(ctx.GlobalString("domain"), db)
 	srv.DeleteA("foo")
