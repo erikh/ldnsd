@@ -38,7 +38,7 @@ docker-check:
 	@if [ -z "$${IN_DOCKER}" ]; then echo "You really don't want to do this"; exit 1; fi
 
 start: docker-check stop
-	sudo ldnsd &
+	sudo ldnsd example.conf &
 
 stop: docker-check
 	sudo pkill ldnsd || :
