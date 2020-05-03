@@ -96,14 +96,14 @@ func runDNS(ctx *cli.Context) error {
 		return errors.Wrap(err, "invalid certificate configuration")
 	}
 
-	grpcS := proto.Boot(db)
+	srv := dnsserver.NewWithDB(ctx.GlobalString("domain"), db)
+	grpcS := proto.Boot(srv, db)
 	l, err := transport.Listen(cert, "tcp", ctx.GlobalString("listen"))
 	if err != nil {
 		return errors.Wrap(err, "while configuring grpc listener")
 	}
-	go grpcS.Serve(l)
 
-	srv := dnsserver.NewWithDB(ctx.GlobalString("domain"), db)
+	go grpcS.Serve(l)
 	installSignalHandler(ctx.App.Name, grpcS, l, srv)
 
 	return srv.Listen(ctx.GlobalString("dnslisten"))

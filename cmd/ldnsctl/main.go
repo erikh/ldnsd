@@ -48,9 +48,22 @@ func main() {
 
 	app.Commands = []cli.Command{
 		{
-			Name:   "list",
-			Action: list,
-			Usage:  "List the A record table",
+			Name:      "list",
+			ArgsUsage: " ",
+			Action:    list,
+			Usage:     "List the A record table",
+		},
+		{
+			Name:      "set",
+			Action:    set,
+			ArgsUsage: "[host] [v4 IP]",
+			Usage:     "Set an A record, only takes IPv4",
+		},
+		{
+			Name:      "delete",
+			Action:    delete,
+			ArgsUsage: "[host]",
+			Usage:     "Delete an A record by hostname",
 		},
 	}
 
@@ -89,6 +102,46 @@ func list(ctx *cli.Context) error {
 
 	for _, record := range list.Records {
 		fmt.Printf("%s\t%s\n", record.Host, record.Address)
+	}
+
+	return nil
+}
+
+func set(ctx *cli.Context) error {
+	if len(ctx.Args()) != 2 {
+		return errors.New("invalid arguments")
+	}
+
+	client, err := getClient(ctx)
+	if err != nil {
+		return errors.Wrap(err, "could not create client")
+	}
+
+	_, err = client.SetA(context.Background(), &proto.Record{
+		Host:    ctx.Args()[0],
+		Address: ctx.Args()[1],
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "could not set A record")
+	}
+
+	return nil
+}
+
+func delete(ctx *cli.Context) error {
+	if len(ctx.Args()) != 1 {
+		return errors.New("invalid arguments")
+	}
+
+	client, err := getClient(ctx)
+	if err != nil {
+		return errors.Wrap(err, "could not create client")
+	}
+
+	_, err = client.DeleteA(context.Background(), &proto.Record{Host: ctx.Args()[0]})
+	if err != nil {
+		return errors.Wrap(err, "could not set A record")
 	}
 
 	return nil
