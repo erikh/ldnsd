@@ -17,7 +17,7 @@ release: distclean
 	GOBIN=${PWD}/build/ldnsd-$$(cat VERSION) VERSION=$$(cat VERSION) make install
 	# FIXME include LICENSE.md
 	cp README.md example.conf build/ldnsd-$$(cat VERSION)
-	cd build && tar cvzf ../ldnsd-$$(cat ../VERSION).tar.gz ldhcpd-$$(cat ../VERSION)
+	cd build && tar cvzf ../ldnsd-$$(cat ../VERSION).tar.gz ldnsd-$$(cat ../VERSION)
 
 distclean:
 	rm -rf build
