@@ -5,7 +5,6 @@ import (
 
 	"code.hollensbe.org/erikh/ldnsd/dnsdb"
 	"github.com/erikh/dnsserver"
-	"github.com/erikh/dnsserver/db"
 	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -14,14 +13,12 @@ import (
 
 // Handler is the control plane handler.
 type Handler struct {
-	// FIXME this needs to be normalized in dnsserver api
 	srv *dnsserver.Server
-	db  db.DB
 }
 
 // Boot boots the grpc service
-func Boot(srv *dnsserver.Server, db db.DB) *grpc.Server {
-	h := &Handler{srv: srv, db: db}
+func Boot(srv *dnsserver.Server) *grpc.Server {
+	h := &Handler{srv: srv}
 
 	s := grpc.NewServer()
 	RegisterDNSControlServer(s, h)
@@ -47,12 +44,10 @@ func toGRPC(record *dnsdb.Record) *Record {
 func (h *Handler) SetA(ctx context.Context, record *Record) (*empty.Empty, error) {
 	r := fromGRPC(record)
 
-	// FIXME errors
-	h.srv.SetA(r.Host, r.IP())
-	// if err := h.srv.SetA(r.Host, r.IP()); err != nil {
-	// 	return &empty.Empty{}, status.Errorf(codes.Aborted, "%v", err)
-	// }
-	//
+	if err := h.srv.SetA(r.Host, r.IP()); err != nil {
+		return &empty.Empty{}, status.Errorf(codes.Aborted, "%v", err)
+	}
+
 	return &empty.Empty{}, nil
 }
 
@@ -60,17 +55,16 @@ func (h *Handler) SetA(ctx context.Context, record *Record) (*empty.Empty, error
 func (h *Handler) DeleteA(ctx context.Context, record *Record) (*empty.Empty, error) {
 	r := fromGRPC(record)
 
-	h.srv.DeleteA(r.Host)
-	// if err := h.srv.DeleteA(r.Host); err != nil {
-	// 	return &empty.Empty{}, status.Errorf(codes.Aborted, "%v", err)
-	// }
+	if err := h.srv.DeleteA(r.Host); err != nil {
+		return &empty.Empty{}, status.Errorf(codes.Aborted, "%v", err)
+	}
 
 	return &empty.Empty{}, nil
 }
 
 // ListA returns a list of DNS records that the database is currently holding.
 func (h *Handler) ListA(ctx context.Context, empty *empty.Empty) (*Records, error) {
-	m, err := h.db.ListA()
+	m, err := h.srv.ListA()
 	if err != nil {
 		return nil, status.Errorf(codes.Aborted, "%v", err)
 	}

@@ -97,7 +97,7 @@ func runDNS(ctx *cli.Context) error {
 	}
 
 	srv := dnsserver.NewWithDB(ctx.GlobalString("domain"), db)
-	grpcS := proto.Boot(srv, db)
+	grpcS := proto.Boot(srv)
 	l, err := transport.Listen(cert, "tcp", ctx.GlobalString("listen"))
 	if err != nil {
 		return errors.Wrap(err, "while configuring grpc listener")
