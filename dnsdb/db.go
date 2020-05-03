@@ -3,7 +3,7 @@ package dnsdb
 import (
 	"net"
 
-	"github.com/erikh/dnsserver/db"
+	dnsserverDB "github.com/erikh/dnsserver/db"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite" // import sqlite3
 	"github.com/pkg/errors"
@@ -20,7 +20,7 @@ type DB struct {
 }
 
 // New opens the DB
-func New(dbfile string) (db.DB, error) {
+func New(dbfile string) (dnsserverDB.DB, error) {
 	db, err := gorm.Open("sqlite3", dbfile)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not connect to db")
@@ -78,8 +78,8 @@ func (db *DB) DeleteA(host string) error {
 }
 
 // ListA lists all the A records in the table
-func (db *DB) ListA() (map[string]net.IP, error) {
-	tmp := map[string]net.IP{}
+func (db *DB) ListA() (dnsserverDB.ARecords, error) {
+	tmp := dnsserverDB.ARecords{}
 
 	return tmp, db.db.Transaction(func(tx *gorm.DB) error {
 		recs := []*Record{}
@@ -96,17 +96,17 @@ func (db *DB) ListA() (map[string]net.IP, error) {
 }
 
 // ListSRV does nothing but fulfill an interface.
-func (db *DB) ListSRV() (map[string]*db.SRVRecord, error) {
+func (db *DB) ListSRV() (dnsserverDB.SRVRecords, error) {
 	return nil, ErrNotSupported
 }
 
 // SetSRV does nothing but fulfill an interface.
-func (db *DB) SetSRV(string, *db.SRVRecord) error {
+func (db *DB) SetSRV(string, *dnsserverDB.SRVRecord) error {
 	return ErrNotSupported
 }
 
 // GetSRV does nothing but fulfill an interface.
-func (db *DB) GetSRV(string) (*db.SRVRecord, error) {
+func (db *DB) GetSRV(string) (*dnsserverDB.SRVRecord, error) {
 	return nil, ErrNotSupported
 }
 
