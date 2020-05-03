@@ -83,7 +83,7 @@ func (db *DB) ListA() (map[string]net.IP, error) {
 
 	return tmp, db.db.Transaction(func(tx *gorm.DB) error {
 		recs := []*Record{}
-		if err := tx.Find(recs).Error; err != nil {
+		if err := tx.Find(&recs).Error; err != nil {
 			return err
 		}
 
