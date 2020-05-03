@@ -41,7 +41,7 @@ $ make release # out comes the tarball in the CWD
 ### Make a CA
 
 You'll need a CA. I strongly recommend installing
-[mkcert](https://github.com/FiloSotille/mkcert) and trying this script to
+[mkcert](https://github.com/FiloSottile/mkcert) and trying this script to
 generate the CA, one server cert, and one client cert in `/etc/ldnsd` (you may
 need to be root to write to this directory):
 
