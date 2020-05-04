@@ -17,4 +17,5 @@ require (
 	google.golang.org/grpc v1.28.1
 	gopkg.in/yaml.v2 v2.2.2
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
+	honnef.co/go/tools v0.0.0-20191107024926-a9480a3ec3bc
 )

@@ -13,10 +13,12 @@ const (
 	defaultCAFile   = "/etc/ldnsd/rootCA.pem"
 	defaultCertFile = "/etc/ldnsd/server.pem"
 	defaultKeyFile  = "/etc/ldnsd/server.key"
+	defaultDomain   = "internal"
 
-	defaultGRPCListen = "localhost:7847"
-	defaultDNSListen  = "localhost:53"
-	defaultDomain     = "internal"
+	// DefaultGRPCListen is the default host:port that we listen for GRPC requests on.
+	DefaultGRPCListen = "localhost:7847"
+	// DefaultDNSListen is the default host:port that we listen for DNS requests on.
+	DefaultDNSListen = "localhost:53"
 )
 
 // Config is the configuration of the dhcpd service
@@ -27,6 +29,13 @@ type Config struct {
 
 	DBFile      string      `yaml:"db_file"`
 	Certificate Certificate `yaml:"certificate"`
+}
+
+// Empty is a config that has all the defaults configured; usually for testing.
+func Empty() Config {
+	c := Config{}
+	c.validateAndFix()
+	return c
 }
 
 // Parse parses the configuration in the file and returns it.
@@ -51,11 +60,11 @@ func (c *Config) validateAndFix() error {
 	}
 
 	if c.GRPCListen == "" {
-		c.GRPCListen = defaultGRPCListen
+		c.GRPCListen = DefaultGRPCListen
 	}
 
 	if c.DNSListen == "" {
-		c.DNSListen = defaultDNSListen
+		c.DNSListen = DefaultDNSListen
 	}
 
 	if c.Domain == "" {
