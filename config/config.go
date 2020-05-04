@@ -13,10 +13,18 @@ const (
 	defaultCAFile   = "/etc/ldnsd/rootCA.pem"
 	defaultCertFile = "/etc/ldnsd/server.pem"
 	defaultKeyFile  = "/etc/ldnsd/server.key"
+
+	defaultGRPCListen = "localhost:7847"
+	defaultDNSListen  = "localhost:53"
+	defaultDomain     = "internal"
 )
 
 // Config is the configuration of the dhcpd service
 type Config struct {
+	GRPCListen string `yaml:"grpc"`
+	DNSListen  string `yaml:"listen"`
+	Domain     string `yaml:"domain"`
+
 	DBFile      string      `yaml:"db_file"`
 	Certificate Certificate `yaml:"certificate"`
 }
@@ -40,6 +48,18 @@ func Parse(filename string) (Config, error) {
 func (c *Config) validateAndFix() error {
 	if c.DBFile == "" {
 		c.DBFile = defaultDBFile
+	}
+
+	if c.GRPCListen == "" {
+		c.GRPCListen = defaultGRPCListen
+	}
+
+	if c.DNSListen == "" {
+		c.DNSListen = defaultDNSListen
+	}
+
+	if c.Domain == "" {
+		c.Domain = defaultDomain
 	}
 
 	if c.Certificate.CertFile == "" {
