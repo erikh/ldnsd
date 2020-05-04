@@ -7,7 +7,6 @@ import (
 
 	"code.hollensbe.org/erikh/ldnsd/proto"
 	"code.hollensbe.org/erikh/ldnsd/version"
-	"github.com/erikh/go-transport"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
@@ -74,17 +73,12 @@ func main() {
 }
 
 func getClient(ctx *cli.Context) (proto.DNSControlClient, error) {
-	cert, err := transport.LoadCert(ctx.GlobalString("ca"), ctx.GlobalString("cert"), ctx.GlobalString("key"), "")
-	if err != nil {
-		return nil, errors.Wrap(err, "while loading client certificate")
-	}
-
-	cc, err := transport.GRPCDial(cert, ctx.GlobalString("host"))
-	if err != nil {
-		return nil, errors.Wrap(err, "while configuring grpc client")
-	}
-
-	return proto.NewDNSControlClient(cc), nil
+	return proto.NewClient(
+		ctx.GlobalString("host"),
+		ctx.GlobalString("ca"),
+		ctx.GlobalString("cert"),
+		ctx.GlobalString("key"),
+	)
 }
 
 func list(ctx *cli.Context) error {
