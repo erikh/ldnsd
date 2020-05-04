@@ -25,6 +25,7 @@ func init() {
 		fmt.Println("Seed: ", s)
 	}
 	rand.Seed(s)
+	os.Remove("test.db")
 }
 
 const (
@@ -61,8 +62,8 @@ func BenchmarkDNSSingleDomain(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
-	defer srv.Shutdown()
 	defer os.Remove("test.db")
+	defer srv.Shutdown()
 
 	client, err := proto.NewClient(config.DefaultGRPCListen, defaultCAFile, defaultCertFile, defaultKeyFile)
 	if err != nil {
@@ -107,8 +108,8 @@ func BenchmarkRecordInsert(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
-	defer srv.Shutdown()
 	defer os.Remove("test.db")
+	defer srv.Shutdown()
 
 	client, err := proto.NewClient(config.DefaultGRPCListen, defaultCAFile, defaultCertFile, defaultKeyFile)
 	if err != nil {
@@ -161,8 +162,8 @@ func BenchmarkRecordInsertThenQuery(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
-	defer srv.Shutdown()
 	defer os.Remove("test.db")
+	defer srv.Shutdown()
 
 	client, err := proto.NewClient(config.DefaultGRPCListen, defaultCAFile, defaultCertFile, defaultKeyFile)
 	if err != nil {
