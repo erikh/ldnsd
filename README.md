@@ -62,16 +62,21 @@ mkcert -ecdsa -client -cert-file /etc/ldnsd/client.pem -key-file /etc/ldnsd/clie
 `ldnsd` takes one argument, the configuration filename. It is a basic YAML
 document that covers certificate management and network listening information.
 
-Here is an example:
+Here is an example. If in doubt, all options have defaults:
 
 ```yaml
 # vim: ft=yaml
 ---
-# no configuration is needed to use the default certificate paths
 certificate:
   ca: "/etc/ldnsd/rootCA.pem"
   cert: "/etc/ldnsd/server.pem"
   key: "/etc/ldnsd/server.key"
+# grpc listening port
+grpc: "localhost:7847"
+# dns listening port (udp only!)
+listen: "localhost:53"
+# TLD for domains.
+domain: "internal"
 ```
 
 ## Launching and Utilization
