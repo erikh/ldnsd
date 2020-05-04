@@ -154,7 +154,6 @@ func BenchmarkRecordInsert(b *testing.B) {
 			}
 		})
 	})
-
 }
 
 func BenchmarkRecordInsertThenQuery(b *testing.B) {
@@ -193,22 +192,21 @@ func BenchmarkRecordInsertThenQuery(b *testing.B) {
 			}
 
 			select {
-			case hostChan <- host:
-				hosts[host] = struct{}{}
 			case <-ctx.Done():
 				return
+			case hostChan <- host:
+				hosts[host] = struct{}{}
 			}
 		}
 	}(ctx)
 
+	// BUG: not running this in parallel largely because I can't get the selects right above and it causes locking issues.
 	b.Run("record insert", func(b *testing.B) {
-		b.RunParallel(func(pb *testing.PB) {
-			for pb.Next() {
-				if _, err := client.SetA(context.Background(), &proto.Record{Host: <-hostChan, Address: "1.2.3.4"}); err != nil {
-					b.Fatal(err)
-				}
+		for i := 0; i < b.N; i++ {
+			if _, err := client.SetA(context.Background(), &proto.Record{Host: <-hostChan, Address: "1.2.3.4"}); err != nil {
+				b.Fatal(err)
 			}
-		})
+		}
 	})
 
 	cancel()
