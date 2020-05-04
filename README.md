@@ -78,7 +78,7 @@ certificate:
 
 `ldnsd my.conf` to launch the service, it does not daemonize so be sure to run
 it in the background if you need to. Also, since :53 is privileged port, you
-will need to run this process as root.\
+will need to run this process as root.
 
 `ldnsctl` can be used to query and manipulate the service. To resolve hosts, use DNS:
 
