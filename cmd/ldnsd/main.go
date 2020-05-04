@@ -40,9 +40,12 @@ func runDNS(ctx *cli.Context) error {
 		return errors.Wrap(err, "while parsing configuration")
 	}
 
-	if err := service.Boot(ctx.App.Name, c); err != nil {
+	srv, err := service.New(ctx.App.Name, c)
+	if err != nil {
 		return errors.Wrap(err, "while running service")
 	}
 
-	return nil
+	srv.InstallSignalHandler()
+
+	return srv.Boot()
 }
