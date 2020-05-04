@@ -22,7 +22,7 @@ func init() {
 	s, err := strconv.ParseInt(seed, 10, 64)
 	if err != nil {
 		s = time.Now().Unix()
-		fmt.Println("Seed: ", s)
+		fmt.Println("Seed:", s)
 	}
 	rand.Seed(s)
 	os.Remove("test.db")
