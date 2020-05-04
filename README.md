@@ -10,7 +10,7 @@ definitions to program it inside of your tools directly.
 Light DNSd is backed by sqlite3 and provides very few features:
 
 - No recursion
-- No caching (although this may be added soon, see _BUGS_)
+- No caching (although this may be added soon, see _Potential Issues_)
 - No forwarding
 - All records are 0 TTL
 
@@ -89,15 +89,17 @@ dig bar.internal. @127.0.0.1
 "Set", "List" and "Delete" operations go through `ldnsctl`. To review how to
 use those operations, please review the `ldnsctl help` command's output.
 
-## BUGS
+## Potential Issues
 
-I haven't gotten to validating, but under certain load patterns I do believe sqlite3 will
-just be too slow to service enough UDP requests to keep up with most other
-name servers, making it a poor choice for a replacement for any of their
-features. I think adding a short term cache to minimize transaction contention
-in heavy write scenarios (say from a CI system that schedules DNS writes to
-service a large network) is the solution here -- not a DNS cache per se, just
-an internal LRU thingy.
+sqlite3 (and the way we use it) under a lot of contention could cause slow
+responses, which could lead to dropped queries. There are benchmarks at the
+root of the repository, if you are able to produce this behavior with them
+please let us know.
+
+On a 12 thread / 6 core intel 9xxx processor, the erikh/dnsserver package
+delivers 7000ns/op for a similar test that ldnsd delivers in 30000ns/op,
+suggesting that (understandably) sqlite3 is slower than map access. That said,
+extended "burn-in" benchmarks have shown no delivery issues so far.
 
 For most other bugs, please see the Issues pages.
 
