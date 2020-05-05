@@ -2,11 +2,13 @@ package dnsdb
 
 import (
 	"net"
+	"strings"
 
 	dnsserverDB "github.com/erikh/dnsserver/db"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite" // import sqlite3
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -44,6 +46,38 @@ type Record struct {
 	Address string
 }
 
+// Validate ensures the record is safe to insert.
+func (r *Record) Validate() error {
+	ip := net.ParseIP(r.Address)
+	if len(ip) == 0 {
+		return errors.New("IP address did not parse")
+	}
+
+	if !ip.To4().Equal(ip) {
+		return errors.New("IP is not IPv4. ldnsd does not support IPv6 yet")
+	}
+
+	return r.validateHost()
+}
+
+func (r *Record) validateHost() error {
+	if len(r.Host) == 0 {
+		return errors.New("name is 0 length")
+	}
+
+	if len(r.Host) > 255 {
+		return errors.New("name is longer than 255 characters")
+	}
+
+	for _, name := range strings.Split(r.Host, ".") {
+		if len(name) > 63 {
+			return errors.New("names in DNS must be 63 characters or less, per part")
+		}
+	}
+
+	return nil
+}
+
 // IP returns the parsed IP address of the record in IPv4 32-bit format.
 func (r *Record) IP() net.IP {
 	return net.ParseIP(r.Address).To4()
@@ -52,10 +86,16 @@ func (r *Record) IP() net.IP {
 // SetA sets an A record in the database.
 func (db *DB) SetA(host string, ip net.IP) error {
 	return db.db.Transaction(func(tx *gorm.DB) error {
-		return tx.Create(&Record{
+		r := &Record{
 			Host:    host,
 			Address: ip.String(),
-		}).Error
+		}
+
+		if err := r.Validate(); err != nil {
+			return errors.Wrap(err, "during record validation")
+		}
+
+		return tx.Create(r).Error
 	})
 }
 
@@ -67,13 +107,22 @@ func (db *DB) GetA(host string) (net.IP, error) {
 		return tx.First(r, "host = ?", host).Error
 	})
 
+	if err := r.Validate(); err != nil {
+		return nil, errors.Wrap(err, "during validation of record fetched")
+	}
+
 	return r.IP(), err
 }
 
 // DeleteA removes a DNS record
 func (db *DB) DeleteA(host string) error {
 	return db.db.Transaction(func(tx *gorm.DB) error {
-		return tx.Delete(&Record{Host: host}).Error
+		r := &Record{Host: host}
+		if err := r.validateHost(); err != nil {
+			return errors.Wrap(err, "during validation of hostname")
+		}
+
+		return tx.Delete(r).Error
 	})
 }
 
@@ -88,6 +137,11 @@ func (db *DB) ListA() (dnsserverDB.ARecords, error) {
 		}
 
 		for _, rec := range recs {
+			if err := rec.Validate(); err != nil {
+				logrus.Errorf("Error validating record %q/%q during database traversal in list function: %v. Skipping record; please file an issue.", rec.Host, rec.IP(), err)
+				continue
+			}
+
 			tmp[rec.Host] = rec.IP()
 		}
 
