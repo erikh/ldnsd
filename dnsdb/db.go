@@ -2,6 +2,7 @@ package dnsdb
 
 import (
 	"net"
+	"regexp"
 	"strings"
 
 	dnsserverDB "github.com/erikh/dnsserver/db"
@@ -10,6 +11,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
+
+var hostMatch = regexp.MustCompile(`^[a-z][0-9a-z-]{0,62}$`)
 
 var (
 	// ErrNotSupported is for when something is not supported by this interface
@@ -70,7 +73,7 @@ func (r *Record) validateHost() error {
 	}
 
 	for _, name := range strings.Split(r.Host, ".") {
-		if len(name) > 63 {
+		if !hostMatch.MatchString(name) {
 			return errors.New("names in DNS must be 63 characters or less, per part")
 		}
 	}

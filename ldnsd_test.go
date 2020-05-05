@@ -237,3 +237,73 @@ func BenchmarkRecordInsertThenQuery(b *testing.B) {
 		})
 	})
 }
+
+func TestProtoRecordValidation(t *testing.T) {
+	srv, err := startService()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove("test.db")
+	defer srv.Shutdown()
+
+	table := map[string]struct {
+		r       *proto.Record
+		success bool
+	}{
+		"basic": {
+			r:       &proto.Record{Host: "test", Address: "127.0.0.1"},
+			success: true,
+		},
+		"empty host": {
+			r:       &proto.Record{Host: "", Address: "127.0.0.1"},
+			success: false,
+		},
+		"empty ip": {
+			r:       &proto.Record{Host: "test", Address: ""},
+			success: false,
+		},
+		"bad ip": {
+			r:       &proto.Record{Host: "test", Address: "abcdefgh"},
+			success: false,
+		},
+		"ipv6 ip": {
+			r:       &proto.Record{Host: "test", Address: "fe80::1"},
+			success: false,
+		},
+		"invalid ipv4 ip": {
+			r:       &proto.Record{Host: "test", Address: "256.1.1.1"},
+			success: false,
+		},
+		"long string is looooooong": {
+			r:       &proto.Record{Host: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", Address: "fe80::1"},
+			success: false,
+		},
+		"long string is too looooooong": {
+			r:       &proto.Record{Host: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", Address: "fe80::1"},
+			success: false,
+		},
+		"long domain is looooooong": {
+			r:       &proto.Record{Host: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", Address: "127.0.0.1"},
+			success: true,
+		},
+		"long domain has a really long part": {
+			r:       &proto.Record{Host: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", Address: "127.0.0.1"},
+			success: false,
+		},
+	}
+
+	client, err := proto.NewClient(config.DefaultGRPCListen, defaultCAFile, defaultCertFile, defaultKeyFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for testName, result := range table {
+		_, resultErr := client.SetA(context.Background(), result.r)
+		if result.success && resultErr != nil {
+			t.Fatalf("Result for %q should be success but was %v", testName, resultErr)
+		}
+		if !result.success && resultErr == nil {
+			t.Fatalf("Result for %q should NOT be success but was.", testName)
+		}
+	}
+}
