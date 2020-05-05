@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"code.hollensbe.org/erikh/ldnsd/config"
-	"code.hollensbe.org/erikh/ldnsd/service"
-	"code.hollensbe.org/erikh/ldnsd/version"
+	"github.com/erikh/ldnsd/config"
+	"github.com/erikh/ldnsd/service"
+	"github.com/erikh/ldnsd/version"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 )

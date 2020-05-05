@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"code.hollensbe.org/erikh/ldnsd/proto"
-	"code.hollensbe.org/erikh/ldnsd/version"
+	"github.com/erikh/ldnsd/proto"
+	"github.com/erikh/ldnsd/version"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"

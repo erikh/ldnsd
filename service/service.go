@@ -6,9 +6,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"code.hollensbe.org/erikh/ldnsd/config"
-	"code.hollensbe.org/erikh/ldnsd/dnsdb"
-	"code.hollensbe.org/erikh/ldnsd/proto"
+	"github.com/erikh/ldnsd/config"
+	"github.com/erikh/ldnsd/dnsdb"
+	"github.com/erikh/ldnsd/proto"
 	"github.com/erikh/dnsserver"
 	"github.com/erikh/go-transport"
 	"github.com/pkg/errors"

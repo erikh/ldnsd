@@ -22,7 +22,7 @@ as a companion to your DNS stack instead of replacing it.
 
 ## Installing
 
-Installing a release is your best choice. Otherwise, you can still `go get code.hollensbe.org/erikh/ldnsd/...`
+Installing a release is your best choice. Otherwise, you can still `go get github.com/erikh/ldnsd/...`
 and get the desired result in your `$GOBIN` or `$GOPATH/bin`.
 
 If you'd like to build in a container or build the release version, just make

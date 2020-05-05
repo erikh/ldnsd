@@ -3,8 +3,8 @@ package proto
 import (
 	context "context"
 
-	"code.hollensbe.org/erikh/ldnsd/dnsdb"
 	"github.com/erikh/dnsserver"
+	"github.com/erikh/ldnsd/dnsdb"
 	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"

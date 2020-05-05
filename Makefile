@@ -1,5 +1,5 @@
 IMAGE_NAME ?= ldnsd:testing
-CODE_PATH ?= /go/src/code.hollensbe.org/erikh/ldnsd
+CODE_PATH ?= /go/src/github.com/erikh/ldnsd
 GO_TEST := sudo go test -v ./... -race -count 1
 VERSION ?= $(shell git rev-parse HEAD)
 

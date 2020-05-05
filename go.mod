@@ -1,4 +1,4 @@
-module code.hollensbe.org/erikh/ldnsd
+module github.com/erikh/ldnsd
 
 go 1.14
 

@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"code.hollensbe.org/erikh/ldnsd/config"
-	"code.hollensbe.org/erikh/ldnsd/proto"
-	"code.hollensbe.org/erikh/ldnsd/service"
+	"github.com/erikh/ldnsd/config"
+	"github.com/erikh/ldnsd/proto"
+	"github.com/erikh/ldnsd/service"
 	"github.com/miekg/dns"
 )
 
