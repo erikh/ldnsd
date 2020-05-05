@@ -6,11 +6,11 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/erikh/dnsserver"
+	"github.com/erikh/go-transport"
 	"github.com/erikh/ldnsd/config"
 	"github.com/erikh/ldnsd/dnsdb"
 	"github.com/erikh/ldnsd/proto"
-	"github.com/erikh/dnsserver"
-	"github.com/erikh/go-transport"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
