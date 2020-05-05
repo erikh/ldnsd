@@ -33,13 +33,6 @@ func fromGRPC(record *Record) *dnsdb.Record {
 	}
 }
 
-func toGRPC(record *dnsdb.Record) *Record {
-	return &Record{
-		Host:    record.Host,
-		Address: record.Address,
-	}
-}
-
 // SetA sets a new A record.
 func (h *Handler) SetA(ctx context.Context, record *Record) (*empty.Empty, error) {
 	r := fromGRPC(record)

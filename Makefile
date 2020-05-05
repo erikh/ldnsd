@@ -14,7 +14,7 @@ DOCKER_CMD := docker run -it \
 	$(IMAGE_NAME)
 
 release: distclean
-	GOBIN=${PWD}/build/ldnsd-$$(cat VERSION) VERSION=$$(cat VERSION) make install
+	GOBIN=${PWD}/build/ldnsd-$$(cat VERSION) VERSION=$$(cat VERSION) make lint install
 	# FIXME include LICENSE.md
 	cp README.md example.conf build/ldnsd-$$(cat VERSION)
 	cd build && tar cvzf ../ldnsd-$$(cat ../VERSION).tar.gz ldnsd-$$(cat ../VERSION)
@@ -52,5 +52,8 @@ get-box:
 
 test:
 	if [ -z "$${IN_DOCKER}" ]; then make build && $(DOCKER_CMD) $(GO_TEST); else $(GO_TEST); fi
+
+lint:
+	golangci-lint run -v
 
 .PHONY: test
