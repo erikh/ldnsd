@@ -1,4 +1,5 @@
 IMAGE_NAME ?= ldnsd:testing
+RELEASE_IMAGE_NAME ?= erikh/ldnsd:$(shell cat VERSION)
 CODE_PATH ?= /go/src/github.com/erikh/ldnsd
 GO_TEST := sudo go test -v ./... -race -count 1
 VERSION ?= $(shell git rev-parse HEAD)
@@ -18,6 +19,9 @@ release: distclean
 	# FIXME include LICENSE.md
 	cp README.md example.conf build/ldnsd-$$(cat VERSION)
 	cd build && tar cvzf ../ldnsd-$$(cat ../VERSION).tar.gz ldnsd-$$(cat ../VERSION)
+
+release-image:
+	VERSION=$$(cat VERSION) box -t $(RELEASE_IMAGE_NAME) box-release.rb
 
 distclean:
 	rm -rf build

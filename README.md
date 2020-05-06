@@ -25,6 +25,24 @@ as a companion to your DNS stack instead of replacing it.
 Installing a release is your best choice. Otherwise, you can still `go get github.com/erikh/ldnsd/...`
 and get the desired result in your `$GOBIN` or `$GOPATH/bin`.
 
+### Docker Image
+
+If you wish to use Docker to power ldnsd, you can use our `erikh/ldnsd`
+version-tagged images. Running with `--net=host` is advisable to avoid the UDP
+proxy docker provides as it tends to drop packets under high load.
+
+Example usage:
+
+```bash
+# start the service
+$ docker run -it -d --name ldnsd --net=host erikh/ldnsd:0.1.0
+# configure some hosts
+$ docker exec -it ldnsd ldnsctl set myhost 1.2.3.4
+$ dig myhost.internal. @127.0.0.1
+```
+
+### Manual Installation
+
 If you'd like to build in a container or build the release version, just make
 sure to have `docker` installed; [box](https://github.com/box-builder/box) will
 be installed as root as a part of the process during the first run while
