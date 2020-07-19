@@ -32,15 +32,15 @@ type Config struct {
 }
 
 // Empty is a config that has all the defaults configured; usually for testing.
-func Empty() Config {
-	c := Config{}
+func Empty() *Config {
+	c := &Config{}
 	c.validateAndFix()
 	return c
 }
 
 // Parse parses the configuration in the file and returns it.
-func Parse(filename string) (Config, error) {
-	var config Config
+func Parse(filename string) (*Config, error) {
+	config := &Config{}
 
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
