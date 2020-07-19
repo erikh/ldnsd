@@ -1,0 +1,12 @@
+---
+mountpoint: "/go/src/github.com/erikh/ldnsd"
+runs:
+  test:
+    command: [ "go", "test", "-v", "-race", "-count", "1", "./..." ]
+    image: "golang:1.14"
+  release:
+    command: [ "make", "release" ]
+    image: "golang:1.14"
+  benchmark:
+    command: [ "go", "test", "-v", "-bench", "./..." ]
+    image: "golang:1.14"
