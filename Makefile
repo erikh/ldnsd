@@ -78,7 +78,7 @@ ci-protobuf:
 
 # these tasks account for the standard golang container image not containing protobuf tools
 ci-generate: ci-protobuf
-	go get -v github.com/golang/protobuf/protoc-gen-go@v1.22.0
+	go get -v github.com/golang/protobuf/protoc-gen-go
 	go generate -v ./...
 
 ci-test: ci-generate
