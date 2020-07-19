@@ -1,4 +1,4 @@
-IMAGE_NAME ?= ldnsd:testing
+IMAGE_NAME ?= erikh/ldnsd:testing
 RELEASE_IMAGE_NAME ?= erikh/ldnsd:$(shell cat VERSION)
 CODE_PATH ?= /go/src/github.com/erikh/ldnsd
 GO_TEST := sudo go test -v ./... -race -count 1
