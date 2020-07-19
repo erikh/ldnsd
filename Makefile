@@ -70,4 +70,21 @@ bench: generate
 lint:
 	golangci-lint run -v
 
+ci-protobuf:
+	apt-get update -qq && apt-get install unzip curl -y
+	curl -sSL -o /protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v3.11.4/protoc-3.11.4-linux-x86_64.zip
+	unzip /protoc.zip -d /usr
+	chmod -R 755 /usr/bin/protoc /usr/include/google
+
+# these tasks account for the standard golang container image not containing protobuf tools
+ci-generate: ci-protobuf
+	go get -v https://github.com/golang/protobuf/protoc-gen-go@v1.22.0
+	go generate -v ./...
+
+ci-test: ci-generate
+	go test -v -race -count 1 ./...
+
+ci-bench: ci-generate
+	go test -v -bench ./... -benchtime 1m
+
 .PHONY: test

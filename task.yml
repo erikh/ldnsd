@@ -2,11 +2,8 @@
 mountpoint: "/go/src/github.com/erikh/ldnsd"
 runs:
   test:
-    command: [ "make", "test" ]
-    image: "erikh/ldnsd:testing"
-  release:
-    command: [ "make", "release" ]
-    image: "erikh/ldnsd:testing"
+    command: [ "make", "ci-test" ]
+    image: "golang:1.14"
   benchmark:
-    command: [ "make", "bench" ]
-    image: "erikh/ldnsd:testing"
+    command: [ "make", "ci-bench" ]
+    image: "golang:1.14"
