@@ -9,6 +9,10 @@ MKCERT_URL = "https://github.com/FiloSottile/mkcert/releases/download/v#{MKCERT_
 GOLANGCI_LINT_VERSION = "1.24.0"
 GOLANGCI_LINT_URL     = "https://github.com/golangci/golangci-lint/releases/download/v#{GOLANGCI_LINT_VERSION}/golangci-lint-#{GOLANGCI_LINT_VERSION}-linux-amd64.tar.gz"
 
+def go_get(name)
+  run "go get -v -u #{name}"
+end
+
 def download(name, url)
   run "curl -sSL -o /#{name} '#{url}'"
   yield "/#{name}"
@@ -42,5 +46,7 @@ end
 
 run "mkdir /etc/ldnsd && chown 1000:1000 /etc/ldnsd"
 env CAROOT: "/etc/ldnsd"
+
+go_get "github.com/golang/protobuf/protoc-gen-go"
 
 set_exec entrypoint: ["sh", "/entrypoint.sh"], cmd: ["bash"]

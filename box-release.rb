@@ -3,6 +3,10 @@ from "debian:latest"
 MKCERT_VERSION = "1.4.1"
 MKCERT_URL = "https://github.com/FiloSottile/mkcert/releases/download/v#{MKCERT_VERSION}/mkcert-v#{MKCERT_VERSION}-linux-amd64"
 
+def go_get(name)
+  run "go get -v -u #{name}"
+end
+
 def download(name, url)
   run "curl -sSL -o /#{name} '#{url}'"
   yield "/#{name}"

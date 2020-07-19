@@ -2,6 +2,7 @@ IMAGE_NAME ?= ldnsd:testing
 RELEASE_IMAGE_NAME ?= erikh/ldnsd:$(shell cat VERSION)
 CODE_PATH ?= /go/src/github.com/erikh/ldnsd
 GO_TEST := sudo go test -v ./... -race -count 1
+GO_BENCH := sudo go test -v -bench ./... -benchtime 1m
 VERSION ?= $(shell git rev-parse HEAD)
 
 DOCKER_CMD := docker run -it \
@@ -14,7 +15,7 @@ DOCKER_CMD := docker run -it \
 	-v ${PWD}:$(CODE_PATH) \
 	$(IMAGE_NAME)
 
-release: distclean
+release: distclean generate-check
 	GOBIN=${PWD}/build/ldnsd-$$(cat VERSION) VERSION=$$(cat VERSION) make lint install
 	# FIXME include LICENSE.md
 	cp README.md example.conf build/ldnsd-$$(cat VERSION)
@@ -54,8 +55,17 @@ get-box:
 		curl -sSL box-builder.sh | sudo bash; \
 	fi
 
-test:
+generate-check: generate
+	git diff --exit-code
+
+generate:
+	if [ -z "$${IN_DOCKER}" ]; then make build && $(DOCKER_CMD) go generate -v ./...; else go generate -v ./...; fi
+
+test: generate
 	if [ -z "$${IN_DOCKER}" ]; then make build && $(DOCKER_CMD) $(GO_TEST); else $(GO_TEST); fi
+
+bench: generate
+	if [ -z "$${IN_DOCKER}" ]; then make build && $(DOCKER_CMD) $(GO_BENCH); else $(GO_BENCH); fi
 
 lint:
 	golangci-lint run -v
