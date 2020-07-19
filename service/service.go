@@ -18,7 +18,7 @@ import (
 
 // Service is the encapsulation of a fully composed service.
 type Service struct {
-	config  config.Config
+	config  *config.Config
 	appName string
 	grpcS   *grpc.Server
 	l       net.Listener
@@ -43,7 +43,7 @@ func (s *Service) InstallSignalHandler() {
 }
 
 // New constructs a new service from a config.Config
-func New(name string, c config.Config) (*Service, error) {
+func New(name string, c *config.Config) (*Service, error) {
 	db, err := dnsdb.New(c.DBFile)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not open database")
