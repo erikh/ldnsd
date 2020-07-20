@@ -3,6 +3,7 @@
 set -e
 
 mkdir -p /etc/ldnsd
+export CAROOT=/etc/ldnsd
 
 mkcert -install && \
   mkcert -ecdsa -cert-file /etc/ldnsd/server.pem -key-file /etc/ldnsd/server.key localhost 127.0.0.1 && \
