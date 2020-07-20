@@ -70,9 +70,11 @@ bench: generate
 lint:
 	golangci-lint run -v
 
-ci-protobuf:
+ci-get-pkgs:
 	apt-get update -qq && apt-get install unzip curl -y
 	curl -sSL -o /protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v3.11.4/protoc-3.11.4-linux-x86_64.zip
+
+ci-protobuf: ci-get-pkgs
 	unzip /protoc.zip -d /usr
 	chmod -R 755 /usr/bin/protoc /usr/include/google
 
@@ -81,10 +83,17 @@ ci-generate: ci-protobuf
 	go get -v github.com/golang/protobuf/protoc-gen-go
 	go generate -v ./...
 
-ci-test: ci-generate
+ci-test: ci-generate mkcert
 	go test -v -race -count 1 ./...
 
-ci-bench: ci-generate
+ci-bench: ci-generate mkcert
 	go test -v -bench ./... -benchtime 1m
+
+get-mkcert: ci-get-pkgs
+	curl -sSL -o /usr/local/bin/mkcert https://github.com/FiloSottile/mkcert/releases/download/v1.4.1/mkcert-v1.4.1-linux-amd64
+	chmod 755 /usr/local/bin/mkcert
+
+mkcert: get-mkcert
+	bash do_mkcert.sh
 
 .PHONY: test
