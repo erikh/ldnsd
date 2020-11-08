@@ -15,13 +15,16 @@ DOCKER_CMD := docker run -it \
 	-v ${PWD}:$(CODE_PATH) \
 	$(IMAGE_NAME)
 
-release: distclean generate-check
+mkcache:
+	mkdir -p .go-cache
+
+release: distclean generate-check mkcache
 	GOBIN=${PWD}/build/ldnsd-$$(cat VERSION) VERSION=$$(cat VERSION) make lint install
 	# FIXME include LICENSE.md
 	cp README.md example.conf build/ldnsd-$$(cat VERSION)
 	cd build && tar cvzf ../ldnsd-$$(cat ../VERSION).tar.gz ldnsd-$$(cat ../VERSION)
 
-release-image:
+release-image: mkcache
 	VERSION=$$(cat VERSION) box -t $(RELEASE_IMAGE_NAME) box-release.rb
 
 distclean:
@@ -36,7 +39,7 @@ shell: build
 	mkdir -p .go-cache
 	$(DOCKER_CMD)	
 
-build: get-box
+build: get-box mkcache
 	box -t $(IMAGE_NAME) box.rb
 
 docker-check:
