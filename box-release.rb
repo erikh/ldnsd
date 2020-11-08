@@ -3,6 +3,9 @@ from "debian:latest"
 MKCERT_VERSION = "1.4.1"
 MKCERT_URL = "https://github.com/FiloSottile/mkcert/releases/download/v#{MKCERT_VERSION}/mkcert-v#{MKCERT_VERSION}-linux-amd64"
 
+PROTOC_VERSION = "3.11.4"
+PROTOC_URL     = "https://github.com/protocolbuffers/protobuf/releases/download/v#{PROTOC_VERSION}/protoc-#{PROTOC_VERSION}-linux-x86_64.zip"
+
 def go_get(name)
   run "go get -v -u #{name}"
 end
@@ -19,6 +22,11 @@ skip do
   download("mkcert", MKCERT_URL) do |path|
     run "chmod 0755 '#{path}'"
     run "mv '#{path}' /tmp/mkcert"
+  end
+
+  download("protoc.zip", PROTOC_URL) do |path|
+    run "unzip #{path} -d /usr"
+    run "chmod -R 755 /usr/bin/protoc /usr/include/google"
   end
 
   copy "ldnsd-#{version}.tar.gz", "/tmp/"
